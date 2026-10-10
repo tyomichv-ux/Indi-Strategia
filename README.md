@@ -1,0 +1,33 @@
+[![Build](https://github.com/humbertodias/unity-real-time-strategy-game/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/humbertodias/unity-real-time-strategy-game/actions/workflows/gh-pages.yml)
+![GitHub all releases](https://img.shields.io/github/downloads/humbertodias/unity-real-time-strategy-game/total)
+
+# Unity RTS Game
+
+Unity Real Time Strategy Game following the tutorial:
+
+[Noobtuts - RTS](https://noobtuts.com/unity/real-time-strategy-game)
+
+# Prerequires
+
+1. [Unity](https://unity3d.com/pt/get-unity/download) 6+
+
+# Game
+
+![](doc/output.png)
+
+# How to run
+
+### Web
+
+[Play](https://humbertodias.github.io/unity-real-time-strategy-game)
+
+
+### Desktop
+
+```shell
+curl https://raw.githubusercontent.com/humbertodias/unity-real-time-strategy-game/main/run.sh | sh
+```
+
+# References
+
+1. [Noobtuts - RTS](https://noobtuts.com/unity/real-time-strategy-game)
