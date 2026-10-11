@@ -40,7 +40,8 @@ public class Selection : MonoBehaviour {
         // только у того, в кого попали. Если луч ни в кого не попал — снять
         // выделение. Рамкой выделять только когда её реально протянули.
 
-        //я это исправлю
+        //я это исправлю зуб даю.
+        //обещаю
         if (Input.GetMouseButtonUp(0)) { 
             GameObject[] units = GameObject.FindGameObjectsWithTag("Player");
             foreach (GameObject g in units) {
