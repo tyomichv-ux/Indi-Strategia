@@ -39,6 +39,8 @@ public class Selection : MonoBehaviour {
         // кликом по одному юниту: пустить луч из камеры и включить кружок
         // только у того, в кого попали. Если луч ни в кого не попал — снять
         // выделение. Рамкой выделять только когда её реально протянули.
+
+        //я это исправлю
         if (Input.GetMouseButtonUp(0)) { 
             GameObject[] units = GameObject.FindGameObjectsWithTag("Player");
             foreach (GameObject g in units) {
