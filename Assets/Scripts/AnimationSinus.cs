@@ -3,14 +3,14 @@ using System.Collections;
 
 public class AnimationSinus : MonoBehaviour {
 
-    float animRemaining = 0.0f;
-    public float animSpeed = 20.0f;
-    public float intensity = 1.0f;
+    float animRemaining = 0.0f; //сколько времени анимации осталось
+    public float animSpeed = 20.0f;//как быстро тикает таймер
+    public float intensity = 1.0f;//насколько сильно пульсирует
 
     Vector3 startScale;
 
 	void Start () {
-	   startScale = transform.localScale;
+	   startScale = transform.localScale;//запомнил изначаьлный размер объекта
 	}
 	
 
@@ -32,12 +32,16 @@ public class AnimationSinus : MonoBehaviour {
         if (animRemaining > 0.0f) {
             animRemaining -= animSpeed * Time.deltaTime;
             
-            float s = Mathf.Sin(animRemaining) * intensity;
+            float s = Mathf.Abs(Mathf.Sin(animRemaining)) * intensity;
             transform.localScale = startScale + new Vector3(s, s, s);
+        }
+        else
+        {
+            transform.localScale = startScale;
         }
 	}
 
-    public void toggle() {
+    public void toggle() {//запуск, ставлю 2п чтобы прошёл весь цикл
         animRemaining = 2 * Mathf.PI;
     }
 
