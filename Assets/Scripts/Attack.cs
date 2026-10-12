@@ -2,55 +2,54 @@ using UnityEngine;
 using System.Collections;
 
 public class Attack : MonoBehaviour {
-    public float range = 5.0f;
+    public float range = 5.0f; //радиус атаки
 
-    public float interval = 1.5f;
-    float intervalElapsed = 0.0f;
+    public float interval = 1.5f;//частота стрельбы в сек
+    float intervalElapsed = 0.0f;//сколько прошло с последнего выстрела
+
+    public string enemyTag = "";//тэг враг
+
+    public GameObject arrow;//arrow prefab
     
-    public string enemyTag = "";
 
-    public GameObject arrow;
-	
-	void Update () {
+    void Update () {
         intervalElapsed += Time.deltaTime;
         
-        if (intervalElapsed >= interval) {
-            GameObject[] units = GameObject.FindGameObjectsWithTag(enemyTag);
-            foreach (GameObject g in units) {
+        if (intervalElapsed >= interval) {//когда стрелять
+            GameObject[] units = GameObject.FindGameObjectsWithTag(enemyTag);//ищем всех врагов
+            GameObject closestEnemy = null;//кандидат для атаки
+            float closestDistance = range;//максимально допустимая дистанция
+            foreach (GameObject g in units) {//только ищем, не стреляем
                 // ещё жив?
                 if (g != null) {
-                    if (Vector3.Distance(g.transform.position, transform.position) <= range) {
-                        // Ошибка: башня стреляет не в ближайшего врага, а в того,
-                        // кто первым попался в списке и стоит в радиусе.
-                        // Список каждый раз в другом порядке, поэтому цель прыгает
-                        // с одного врага на другого.
-                        // Как исправить: в цикле не стрелять сразу, а запомнить
-                        // врага с самой маленькой дистанцией и выстрелить в него
-                        // уже после цикла.
-                        //
-                        // Вторая ошибка: в момент выстрела юнит клюёт носом,
-                        // иногда наклоняется к земле.
-                        // Почему. LookAt поворачивает весь объект, и по вертикали тоже,
-                        // если цель выше или ниже.
-                        // Как исправить: перед поворотом взять позицию цели и подставить
-                        // в неё свою высоту. Тогда объект повернётся только
-                        // влево-вправо и не будет наклоняться к земле.
-                        transform.LookAt(g.transform);
-                     
-                        GetComponent<AnimationSinus>().toggle();
-
-                        GameObject a = (GameObject)Instantiate(arrow, 
-                                                               transform.position, // default position
-                                                               Quaternion.identity); // default rotation
-
-                        a.GetComponent<Arrow>().target = g.transform;
-
-                        break;
+                    float dist = Vector3.Distance(g.transform.position, transform.position);
+                    if (dist <= closestDistance)
+                    {
+                        closestDistance = dist;
+                        closestEnemy = g;
                     }
                 }
+            }
+
+            if (closestEnemy != null)
+            {
+                transform.LookAt(closestEnemy.transform);
+
+                GetComponent<AnimationSinus>().toggle();
+
+                GameObject a = (GameObject)Instantiate(arrow, transform.position, Quaternion.identity);
+
+                a.GetComponent<Arrow>().target = closestEnemy.transform;
             }
 
             intervalElapsed = 0.0f;
         }
 	}
 }
+// Вторая ошибка: в момент выстрела юнит клюёт носом,
+// иногда наклоняется к земле.
+// Почему. LookAt поворачивает весь объект, и по вертикали тоже,
+// если цель выше или ниже.
+// Как исправить: перед поворотом взять позицию цели и подставить
+// в неё свою высоту. Тогда объект повернётся только
+// влево-вправо и не будет наклоняться к земле.
