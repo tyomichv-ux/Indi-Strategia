@@ -12,13 +12,17 @@ public class AnimationSinus : MonoBehaviour {
 	void Start () {
 	   startScale = transform.localScale;
 	}
-	
+    void Awake()
+    {
+        startScale = transform.localScale;
+    }
 
-	void Update () {
+
+        void Update () {
         if (animRemaining > 0.0f) {
             animRemaining -= animSpeed * Time.deltaTime;
-            
-            float s = Mathf.Sin(animRemaining) * intensity;
+
+            float s = Mathf.Abs(Mathf.Sin(animRemaining)) * intensity;
             transform.localScale = startScale + new Vector3(s, s, s);
         }
 	}
