@@ -34,8 +34,6 @@ public class Selection : MonoBehaviour {
 					Camera cam = Camera.main;
 					Vector3 p = cam.WorldToScreenPoint(g.transform.position);
                     Vector2 screenPos = new Vector2(p.x, Screen.height - p.y);
-                    
-                    Debug.Log("single selection break2" + g.name);
 
                     if (currentRect().Contains(screenPos)) {
                         setSelectionCircleVisiblity(g, true);
@@ -66,15 +64,3 @@ public class Selection : MonoBehaviour {
         }
     }
 }
-// Ошибка: клик по юниту его не выбирает, а снимает выделение со всех.
-// Клик по своему замку, чтобы создать солдата, тоже сбрасывает отряд.
-//
-// Почему. Выделение решается только рамкой. Если кнопку нажали и отпустили
-// почти на том же пикселе, ширина и высота рамки равны 0.
-// Contains у такой рамки не считает ни одну точку «внутри».
-// Всем юнитам выключается кружок под ногами.
-//
-// Как исправить. Если рамка меньше нескольких пикселей, считать это
-// кликом по одному юниту: пустить луч из камеры и включить кружок
-// только у того, в кого попали. Если луч ни в кого не попал — снять
-// выделение. Рамкой выделять только когда её реально протянули.

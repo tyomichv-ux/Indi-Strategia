@@ -27,7 +27,15 @@ public class Health : MonoBehaviour {
     void LateUpdate() {
         // умер?   
         if (current <= 0) {
-            Destroy(gameObject);
+            Unit unit = GetComponent<Unit>();
+            if (unit != null)
+            {
+                unit.Die();
+            }
+            else
+            {
+                Destroy(gameObject);
+            }    
         }
     }
 }

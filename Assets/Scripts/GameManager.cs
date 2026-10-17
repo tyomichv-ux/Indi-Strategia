@@ -5,19 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public float checkInterval = 0.5f;   // как часто проверять (сек)
-    bool playerHadCastle = false; // у игрока хоть раз был замок?
-    bool enemyHadCastle = false;// у врага хоть раз был замок?
-    string resultText = ""; // "YOU WIN" / "YOU LOSE"
+    public float checkInterval = 0.5f;
+    bool playerHadCastle = false;
+    bool enemyHadCastle = false;
+    string resultText = "";
     bool gameOver = false;
+    float finalTime = 0f;  // ← НОВОЕ: сохраняем итоговое время
 
     float checkTimer = 0.0f;
 
     void Start()
     {
-        Debug.Log("GameManager STARTED");   // <-- ВРЕМЕННО
+        if (TimerManager.Instance != null)
+            TimerManager.Instance.StartTimer();
     }
-
     void Update()
     {
         if (gameOver) return;
@@ -28,14 +29,9 @@ public class GameManager : MonoBehaviour
         int playerCastles = CountPlayerCastles();
         int enemyCastles = CountEnemyCastles();
 
-        Debug.Log("P=" + playerCastles + " E=" + enemyCastles +
-              " hadP=" + playerHadCastle + " hadE=" + enemyHadCastle);
-
-        // Запоминаем, что замки вообще были
         if (playerCastles > 0) playerHadCastle = true;
         if (enemyCastles > 0) enemyHadCastle = true;
 
-        // Проверяем условия конца игры
         if (playerHadCastle && playerCastles == 0)
         {
             EndGame("YOU LOSE");
@@ -50,13 +46,30 @@ public class GameManager : MonoBehaviour
     {
         gameOver = true;
         resultText = text;
-        Time.timeScale = 0f;// замораживаем игру
+
+        float finalTime = 0f;
+
+        // Останавливаем таймер
+        if (TimerManager.Instance != null)
+        {
+            TimerManager.Instance.StopTimer();
+            finalTime = TimerManager.Instance.GetTime();
+        }
+
+        // ← НОВОЕ: сохраняем в JSON
+        if (RecordManager.Instance != null)
+        {
+            RecordManager.Instance.SaveRecord(finalTime, text);
+        }
+
+        Time.timeScale = 0f;
     }
 
     int CountPlayerCastles()
     {
         int count = 0;
-        foreach (var c in FindObjectsOfType<CastlePlayer>())
+        // ← ИСПРАВЛЕНО: устаревший метод заменён
+        foreach (var c in FindObjectsByType<CastlePlayer>(FindObjectsSortMode.None))
         {
             if (c.gameObject.tag == "Player") count++;
         }
@@ -65,7 +78,8 @@ public class GameManager : MonoBehaviour
 
     int CountEnemyCastles()
     {
-        return FindObjectsOfType<CastleNpc>().Length;
+        // ← ИСПРАВЛЕНО
+        return FindObjectsByType<CastleNpc>(FindObjectsSortMode.None).Length;
     }
 
     void OnGUI()
@@ -75,18 +89,33 @@ public class GameManager : MonoBehaviour
         GUIStyle style = new GUIStyle(GUI.skin.label);
         style.fontSize = 60;
         style.alignment = TextAnchor.MiddleCenter;
-        
         style.normal.textColor = (resultText == "YOU WIN") ? Color.green : Color.red;
+
+        // Надпись по центру
         GUI.Label(new Rect(0, Screen.height / 2 - 60, Screen.width, 120), resultText, style);
 
-        // Кнопка "Restart"
-        if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 + 80, 200, 50), "Restart"))
+        // Ширина кнопок и отступ между ними
+        float btnWidth = 200f;
+        float btnHeight = 50f;
+        float gap = 50f; // Расстояние между кнопками
+
+        // Считаем, где начинать, чтобы вся группа была ровно по центру
+        float totalWidth = (btnWidth * 2) + gap;
+        float startX = (Screen.width - totalWidth) / 2f;
+        float y = Screen.height / 2 + 80;
+
+        // Кнопка "Restart" (слева)
+        if (GUI.Button(new Rect(startX, y, btnWidth, btnHeight), "Restart"))
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+
+        // Кнопка "В меню" (справа)
+        if (GUI.Button(new Rect(startX + btnWidth + gap, y, btnWidth, btnHeight), "В меню"))
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(0); // Убедись, что сцена называется именно так
+        }
     }
-
-
-
 }
